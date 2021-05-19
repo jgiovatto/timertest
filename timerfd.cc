@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdint.h>
 #include <sched.h>
 #include <stdio.h>
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
            fprintf(stderr, "[-i interval usecs,                           default 1000]\n");
            fprintf(stderr, "[-n num iterations,                           default 10000] \n");
            fprintf(stderr, "[-r realtime priority,                        default 0] \n");
-           fprintf(stderr, "[-p sched policy 0 = OTHER, 1 = RR, 2 = FIFO, default 0] \n");
+           fprintf(stderr, "[-p sched policy 0 = OTHER, 1 = RR, 2 = FIFO, default 0 for -r 0, otherwise 1] \n");
            return -1;
        }
      }
@@ -77,6 +78,9 @@ int main(int argc, char *argv[])
     // set real time priority
     if(priority > 0)
      {
+      if(policy == 0)
+        policy = SCHED_RR;
+
       const struct sched_param param = {priority};
 
       if(sched_setscheduler(getpid(), policy, &param) < 0)
